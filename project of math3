@@ -1,0 +1,45 @@
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static double F(double x) => x * x * x - 8 * x + 5;
+    static double DF(double x) => 3 * x * x - 8;
+
+    static void Main()
+    {
+        Console.Write("Enter x0: ");
+        double x = double.Parse(Console.ReadLine()!);
+
+        List<double> points = new List<double> { x };
+        int count = 0;
+
+        while (true)
+        {
+            count++;
+            double nextX = x - F(x) / DF(x);
+            points.Add(nextX);
+            Console.WriteLine($"Step {count}: {nextX:F6}");
+
+            if (Math.Abs(nextX - x) < 1e-6 || count >= 100)
+            {
+                x = nextX;
+                break;
+            }
+            x = nextX;
+        }
+
+        Console.WriteLine($"\nIterations: {count}");
+        Console.WriteLine($"Root: {x:F6}\n");
+
+        // Simple text plot of f(x) and iteration points
+        for (int i = 0; i < points.Count; i++)
+        {
+            double px = points[i];
+            double py = F(px);
+            int barLength = Math.Clamp((int)(Math.Abs(py) * 2), 0, 30);
+            string marker = (i == points.Count - 1) ? " [ROOT]" : "";
+            Console.WriteLine($"x = {px,9:F4} | f(x) = {py,9:F4} | {new string('*', barLength)}{marker}");
+        }
+    }
+}
